@@ -1,20 +1,24 @@
 
 import React, { useState } from 'react';
 import { NeonSign, SystemConfig } from '../types';
-import { 
-  Plus, 
-  Trash2, 
-  Settings, 
-  Terminal, 
-  Database, 
-  Save, 
+import {
+  Plus,
+  Trash2,
+  Settings,
+  Terminal,
+  Database,
+  Save,
   Image as ImageIcon,
   Zap,
   LayoutDashboard,
   Cpu,
   RefreshCw,
-  XCircle
+  XCircle,
+  Edit,
+  X
 } from 'lucide-react';
+
+import { productService } from '../services/productService';
 
 interface AdminProps {
   signs: NeonSign[];
@@ -24,6 +28,8 @@ interface AdminProps {
 }
 
 const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
@@ -32,26 +38,72 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
     isNew: true
   });
 
-  const handleDelete = (id: string) => {
-    setSigns(prev => prev.filter(s => s.id !== id));
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this artifact?')) {
+      try {
+        setLoading(true);
+        await productService.deleteProduct(id);
+        if (editingId === id) {
+          handleCancelEdit();
+        }
+      } catch (error) {
+        alert('Failed to delete product');
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  const handleEdit = (sign: NeonSign) => {
+    setEditingId(sign.id);
+    setNewProduct({
+      name: sign.name,
+      price: sign.price.toString(),
+      category: sign.category,
+      image: sign.image,
+      isNew: sign.isNew || false
+    });
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setNewProduct({ name: '', price: '', category: '', image: '', isNew: true });
+  };
+
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProduct.name || !newProduct.price) return;
 
-    const sign: NeonSign = {
-      id: Date.now().toString(),
-      name: newProduct.name,
-      price: parseFloat(newProduct.price),
-      category: newProduct.category || 'Uncategorized',
-      image: newProduct.image || 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800',
-      isNew: newProduct.isNew,
-      tags: []
-    };
-
-    setSigns(prev => [sign, ...prev]);
-    setNewProduct({ name: '', price: '', category: '', image: '', isNew: true });
+    try {
+      setLoading(true);
+      if (editingId) {
+        await productService.updateProduct(editingId, {
+          name: newProduct.name,
+          price: parseFloat(newProduct.price),
+          category: newProduct.category || 'Uncategorized',
+          image: newProduct.image || 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800',
+          isNew: newProduct.isNew
+        });
+        handleCancelEdit();
+      } else {
+        await productService.addProduct({
+          name: newProduct.name,
+          price: parseFloat(newProduct.price),
+          category: newProduct.category || 'Uncategorized',
+          image: newProduct.image || 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800',
+          isNew: newProduct.isNew,
+          tags: []
+        });
+        setNewProduct({ name: '', price: '', category: '', image: '', isNew: true });
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Operation failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleSaleMode = () => {
@@ -68,7 +120,7 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
           </div>
           <h1 className="font-orbitron text-6xl md:text-8xl font-black">NEURAL <span className="text-glow-cyan">ADMIN</span></h1>
         </div>
-        
+
         <div className="flex gap-4">
           <div className="px-6 py-4 glass-panel border border-emerald-500/20 rounded-2xl flex items-center gap-4">
             <Cpu className="w-5 h-5 text-emerald-400" />
@@ -88,12 +140,12 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
             <h3 className="font-orbitron text-xl font-black mb-8 flex items-center gap-3">
               <Settings className="w-5 h-5 text-emerald-400" /> SYSTEM OVERRIDE
             </h3>
-            
+
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Uplink Identity</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={config.storeName}
                   onChange={(e) => setConfig(prev => ({ ...prev, storeName: e.target.value }))}
                   className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-400/50 outline-none transition-all"
@@ -105,7 +157,7 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
                   <h4 className="text-sm font-bold text-white uppercase mb-1">Emergency Sale Mode</h4>
                   <p className="text-[10px] text-slate-500 uppercase">Apply emerald glow to all prices</p>
                 </div>
-                <button 
+                <button
                   onClick={toggleSaleMode}
                   className={`w-12 h-6 rounded-full p-1 transition-all ${config.saleMode ? 'bg-emerald-500' : 'bg-slate-800'}`}
                 >
@@ -119,7 +171,7 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
                   <p className="text-[10px] text-slate-500 uppercase">Lock public access node</p>
                 </div>
                 <div className="w-12 h-6 rounded-full bg-slate-800 p-1">
-                   <div className="w-4 h-4 rounded-full bg-slate-600"></div>
+                  <div className="w-4 h-4 rounded-full bg-slate-600"></div>
                 </div>
               </div>
             </div>
@@ -127,54 +179,77 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
 
           <div className="glass-panel rounded-[2.5rem] p-10 border border-emerald-500/10">
             <h3 className="font-orbitron text-xl font-black mb-8 flex items-center gap-3">
-              <Plus className="w-5 h-5 text-emerald-400" /> FABRICATE ASSET
+              {editingId ? (
+                <>
+                  <Edit className="w-5 h-5 text-emerald-400" /> UPDATE ARTIFACT
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5 h-5 text-emerald-400" /> FABRICATE ASSET
+                </>
+              )}
             </h3>
             <form onSubmit={handleAddProduct} className="space-y-6">
               <div className="space-y-2">
-                <input 
+                <input
                   required
                   placeholder="Artifact Name"
                   value={newProduct.name}
-                  onChange={e => setNewProduct({...newProduct, name: e.target.value})}
+                  onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
                   className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-400/50 outline-none transition-all"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <input 
+                <input
                   required
                   placeholder="Price (USD)"
                   type="number"
                   value={newProduct.price}
-                  onChange={e => setNewProduct({...newProduct, price: e.target.value})}
+                  onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
                   className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-400/50 outline-none transition-all font-mono"
                 />
-                <input 
+                <input
                   placeholder="Category"
                   value={newProduct.category}
-                  onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                  onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
                   className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-400/50 outline-none transition-all"
                 />
               </div>
               <div className="space-y-2">
-                <input 
+                <input
                   placeholder="Image Neural Link (URL)"
                   value={newProduct.image}
-                  onChange={e => setNewProduct({...newProduct, image: e.target.value})}
+                  onChange={e => setNewProduct({ ...newProduct, image: e.target.value })}
                   className="w-full bg-slate-950/50 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-emerald-400/50 outline-none transition-all"
                 />
               </div>
               <div className="flex items-center gap-3">
-                <input 
+                <input
                   type="checkbox"
                   checked={newProduct.isNew}
-                  onChange={e => setNewProduct({...newProduct, isNew: e.target.checked})}
+                  onChange={e => setNewProduct({ ...newProduct, isNew: e.target.checked })}
                   className="w-4 h-4 accent-emerald-500"
                 />
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Mark as New Arrival</label>
               </div>
-              <button className="w-full py-4 rounded-xl bg-emerald-500 text-slate-950 font-black text-sm uppercase tracking-widest hover:bg-white hover:shadow-[0_0_40px_rgba(52,211,153,0.4)] transition-all flex items-center justify-center gap-2">
-                <Zap className="w-4 h-4" /> INJECT RECORD
-              </button>
+              <div className="flex gap-3">
+                <button className="flex-1 py-4 rounded-xl bg-emerald-500 text-slate-950 font-black text-sm uppercase tracking-widest hover:bg-white hover:shadow-[0_0_40px_rgba(52,211,153,0.4)] transition-all flex items-center justify-center gap-2">
+                  {editingId ? (
+                    <><RefreshCw className="w-4 h-4" /> UPDATE RECORD</>
+                  ) : (
+                    <><Zap className="w-4 h-4" /> INJECT RECORD</>
+                  )}
+                </button>
+                {editingId && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="w-14 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all flex items-center justify-center"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>
@@ -190,7 +265,7 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
                 <RefreshCw className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
@@ -230,12 +305,20 @@ const Admin: React.FC<AdminProps> = ({ signs, setSigns, config, setConfig }) => 
                         <span className="font-orbitron text-sm font-black text-white">${sign.price}</span>
                       </td>
                       <td className="px-8 py-6 text-right">
-                        <button 
-                          onClick={() => handleDelete(sign.id)}
-                          className="p-3 text-slate-600 hover:text-red-400 transition-all hover:bg-red-400/10 rounded-xl"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleEdit(sign)}
+                            className="p-3 text-slate-600 hover:text-emerald-400 transition-all hover:bg-emerald-400/10 rounded-xl"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(sign.id)}
+                            className="p-3 text-slate-600 hover:text-red-400 transition-all hover:bg-red-400/10 rounded-xl"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

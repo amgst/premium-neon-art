@@ -17,6 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
     { label: 'Shop All', id: 'shop' },
     { label: 'Custom Neon', id: 'custom' },
     { label: 'The Craft', id: 'craft' },
+    { label: 'Admin', id: 'admin' },
   ];
 
   const logoParts = storeName.split(' ');
@@ -24,11 +25,10 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
   const mainPart = logoParts.join(' ');
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      isScrolled ? 'py-4 glass-panel border-b border-fuchsia-500/10' : 'py-8 bg-transparent'
-    }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'py-4 glass-panel border-b border-fuchsia-500/10' : 'py-8 bg-transparent'
+      }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <div 
+        <div
           onClick={() => onNavigate('home')}
           className="flex items-center gap-3 group cursor-pointer"
         >
@@ -46,20 +46,18 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
             <button
               key={link.id}
               onClick={() => onNavigate(link.id)}
-              className={`text-xs font-black tracking-[0.2em] uppercase transition-all relative group ${
-                currentPage === link.id ? 'text-fuchsia-400 text-glow-fuchsia' : 'text-slate-400 hover:text-white'
-              }`}
+              className={`text-xs font-black tracking-[0.2em] uppercase transition-all relative group ${currentPage === link.id ? 'text-fuchsia-400 text-glow-fuchsia' : 'text-slate-400 hover:text-white'
+                }`}
             >
               {link.label}
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-fuchsia-400 to-cyan-500 transition-all duration-300 ${
-                currentPage === link.id ? 'w-full' : 'w-0 group-hover:w-full'
-              }`}></span>
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-fuchsia-400 to-cyan-500 transition-all duration-300 ${currentPage === link.id ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-3 sm:gap-5">
-          <button 
+          <button
             onClick={() => onNavigate('admin')}
             className={`p-2 transition-colors ${currentPage === 'admin' ? 'text-emerald-400' : 'text-slate-500 hover:text-emerald-400'}`}
             title="Terminal Access"
@@ -67,9 +65,9 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
             <Terminal className="w-5 h-5" />
           </button>
 
-          <button 
-             onClick={() => onNavigate('shop')}
-             className="relative p-2 text-slate-300 hover:text-fuchsia-400 transition-colors"
+          <button
+            onClick={() => onNavigate('shop')}
+            className="relative p-2 text-slate-300 hover:text-fuchsia-400 transition-colors"
           >
             <Heart className={`w-6 h-6 ${wishlistCount > 0 ? 'text-fuchsia-400 fill-fuchsia-400/20' : ''}`} />
             {wishlistCount > 0 && (
@@ -79,9 +77,9 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
             )}
           </button>
 
-          <button 
-             onClick={() => onNavigate('cart')}
-             className="relative p-2 text-slate-300 hover:text-cyan-400 transition-colors"
+          <button
+            onClick={() => onNavigate('cart')}
+            className="relative p-2 text-slate-300 hover:text-cyan-400 transition-colors"
           >
             <ShoppingCart className="w-6 h-6" />
             {cartCount > 0 && (
