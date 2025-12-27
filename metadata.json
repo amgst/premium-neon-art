@@ -1,0 +1,9 @@
+
+{
+  "name": "LuminalSign Co. - Premium Neon Art",
+  "description": "Handcrafted, high-intensity neon signs for modern spaces, gaming dens, and commercial storefronts.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
