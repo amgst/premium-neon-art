@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import MouseGlow from './components/MouseGlow';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import ProductDetail from './pages/ProductDetail';
 import Customizer from './pages/Customizer';
 import TheCraft from './pages/TheCraft';
 import Cart from './pages/Cart';
@@ -53,6 +54,7 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [signs, setSigns] = useState<NeonSign[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<NeonSign | null>(null);
   const [config, setConfig] = useState<SystemConfig>({
     storeName: 'LUMINAL SIGN',
     saleMode: false,
@@ -122,8 +124,22 @@ const App: React.FC = () => {
           onAddToCart={addToCart}
           wishlist={wishlist}
           onToggleWishlist={toggleWishlist}
+          onViewProduct={(product) => {
+            setSelectedProduct(product);
+            setCurrentPage('product');
+          }}
         />
       );
+      case 'product': return selectedProduct ? (
+        <ProductDetail
+          product={selectedProduct}
+          onNavigate={setCurrentPage}
+          onAddToCart={addToCart}
+          wishlist={wishlist}
+          onToggleWishlist={toggleWishlist}
+          relatedProducts={signs.filter(s => s.id !== selectedProduct.id).slice(0, 3)}
+        />
+      ) : <Home onNavigate={setCurrentPage} />;
       case 'custom': return <Customizer />;
       case 'craft': return <TheCraft />;
       case 'cart': return (
@@ -158,9 +174,9 @@ const App: React.FC = () => {
       <MouseGlow />
 
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-fuchsia-600/10 rounded-full mix-blend-screen filter blur-[150px] animate-blob"></div>
-        <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-cyan-600/15 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-[-20%] left-[10%] w-[1000px] h-[1000px] bg-purple-600/10 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-fuchsia-600/10 rounded-full mix-blend-screen filter blur-[150px] animate-blob pulse-glow"></div>
+        <div className="absolute top-[30%] right-[-10%] w-[600px] h-[600px] bg-cyan-600/15 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-2000 pulse-glow"></div>
+        <div className="absolute bottom-[-20%] left-[10%] w-[1000px] h-[1000px] bg-purple-600/10 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-4000 pulse-glow"></div>
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">

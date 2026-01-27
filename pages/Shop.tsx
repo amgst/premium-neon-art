@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { ShoppingBag, Eye, Heart, X, Sparkles, CheckCircle2, Upload, Maximize, Palette, MessageSquare, Send, Zap, FilterX, Flame } from 'lucide-react';
+import { ShoppingBag, Heart, Sparkles, CheckCircle2, Upload, Maximize, Palette, MessageSquare, Send, Zap, FilterX, Flame } from 'lucide-react';
 import { NeonSign, SystemConfig } from '../types';
 
 interface ShopProps {
@@ -9,11 +9,10 @@ interface ShopProps {
   onAddToCart: (product: NeonSign) => void;
   wishlist: string[];
   onToggleWishlist: (id: string) => void;
+  onViewProduct: (product: NeonSign) => void;
 }
 
-const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onToggleWishlist }) => {
-  const [selectedSign, setSelectedSign] = useState<NeonSign | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
+const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onToggleWishlist, onViewProduct }) => {
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
   const displayedSigns = useMemo(() => {
@@ -37,11 +36,14 @@ const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onTog
     const isWishlisted = wishlist.includes(sign.id);
 
     return (
-      <div className={`group relative glass-panel rounded-[2.5rem] p-6 border transition-all duration-500 hover:-translate-y-4 ${
-        variant === 'featured' 
-          ? 'border-fuchsia-500/20 shadow-[0_0_30px_rgba(217,70,239,0.05)] bg-slate-900/40' 
-          : 'border-white/5 hover:border-cyan-400/30'
-      }`}>
+      <div 
+        className={`group relative glass-panel rounded-[2.5rem] p-6 border transition-all duration-500 hover:-translate-y-4 cursor-pointer ${
+          variant === 'featured' 
+            ? 'border-fuchsia-500/20 shadow-[0_0_30px_rgba(217,70,239,0.05)] bg-slate-900/40' 
+            : 'border-white/5 hover:border-cyan-400/30'
+        }`}
+        onClick={() => onViewProduct(sign)}
+      >
         <div className="aspect-square bg-slate-900/50 rounded-3xl mb-6 relative overflow-hidden">
           <img src={sign.image} alt={sign.name} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
@@ -56,7 +58,10 @@ const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onTog
 
           <div className="absolute top-4 right-4 flex flex-col gap-2">
             <button 
-              onClick={() => onToggleWishlist(sign.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleWishlist(sign.id);
+              }}
               className={`p-3 glass-panel border rounded-full transition-all hover:scale-110 active:scale-95 ${
                 isWishlisted 
                   ? 'border-fuchsia-400/50 bg-fuchsia-400 text-white shadow-[0_0_20px_rgba(217,70,239,0.5)]' 
@@ -64,12 +69,6 @@ const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onTog
               }`}
             >
               <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
-            </button>
-            <button 
-              onClick={() => setSelectedSign(sign)}
-              className="p-3 glass-panel border border-white/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-cyan-400 hover:text-white"
-            >
-              <Eye className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -86,32 +85,33 @@ const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onTog
           </div>
         </div>
 
-        <button 
-          onClick={() => onAddToCart(sign)}
-          className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
-            variant === 'featured'
-              ? 'bg-fuchsia-500 text-white hover:bg-white hover:text-slate-950 hover:shadow-[0_0_30px_rgba(217,70,239,0.6)]'
-              : 'bg-white text-slate-950 hover:bg-cyan-400 hover:text-white hover:shadow-[0_0_40px_rgba(34,211,238,0.4)]'
-          }`}
-        >
-          <ShoppingBag className="w-4 h-4" /> ADD TO CART
-        </button>
+        <div className="px-2">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(sign);
+            }}
+            className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
+              variant === 'featured'
+                ? 'bg-fuchsia-500 text-white hover:bg-white hover:text-slate-950 hover:shadow-[0_0_30px_rgba(217,70,239,0.6)]'
+                : 'bg-white text-slate-950 hover:bg-cyan-400 hover:text-white hover:shadow-[0_0_40px_rgba(34,211,238,0.4)]'
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4" /> ADD TO CART
+          </button>
+        </div>
       </div>
     );
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFileName(e.target.files[0].name);
-    }
-  };
+
 
   return (
     <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
         <div>
-          <span className="text-fuchsia-400 font-bold tracking-[0.4em] uppercase text-xs mb-4 block">Collection 2024</span>
-          <h1 className="font-orbitron text-6xl md:text-8xl font-black">THE <span className="text-white text-glow-fuchsia">SHOP</span></h1>
+          <span className="text-fuchsia-400 font-bold tracking-[0.4em] uppercase text-xs mb-4 block text-glow-fuchsia">Collection 2024</span>
+          <h1 className="font-orbitron text-6xl md:text-8xl font-black">THE <span className="text-white">SHOP</span></h1>
         </div>
         
         <div className="flex gap-4">
@@ -185,7 +185,6 @@ const Shop: React.FC<ShopProps> = ({ signs, config, onAddToCart, wishlist, onTog
         </>
       )}
 
-      {/* Upload design remains the same... */}
     </div>
   );
 };

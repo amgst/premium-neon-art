@@ -25,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
   const mainPart = logoParts.join(' ');
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'py-4 glass-panel border-b border-fuchsia-500/10' : 'py-8 bg-transparent'
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'py-4 glass-panel border-b border-fuchsia-500/20' : 'py-8 bg-transparent'
       }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <div
@@ -33,11 +33,11 @@ const Navbar: React.FC<NavbarProps> = ({ isScrolled, currentPage, onNavigate, ca
           className="flex items-center gap-3 group cursor-pointer"
         >
           <div className="relative">
-            <Sparkles className="w-8 h-8 text-fuchsia-400 group-hover:text-cyan-400 transition-colors duration-500" />
+            <Sparkles className="w-8 h-8 text-fuchsia-400 group-hover:text-cyan-400 transition-colors duration-500 pulse-glow" />
             <div className="absolute inset-0 bg-fuchsia-400/20 blur-xl group-hover:bg-cyan-500/30 transition-all duration-500 rounded-full scale-150 opacity-0 group-hover:opacity-100"></div>
           </div>
           <span className="font-orbitron text-2xl font-black tracking-tighter bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent uppercase">
-            {mainPart}<span className="text-fuchsia-400">{lastPart}</span>
+            {mainPart}<span className="text-fuchsia-400 text-glow-fuchsia">{lastPart}</span>
           </span>
         </div>
 

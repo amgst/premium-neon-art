@@ -41,8 +41,8 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
       </div>
       
       <div className="relative z-10 max-w-6xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full glass-panel border border-fuchsia-500/20 text-[10px] font-black tracking-[0.3em] text-fuchsia-400 uppercase mb-12 shadow-[0_0_30px_rgba(217,70,239,0.2)]">
-          <Zap className="w-3.5 h-3.5 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full glass-panel border border-fuchsia-500/30 text-[10px] font-black tracking-[0.3em] text-fuchsia-400 uppercase mb-12 neon-glow-fuchsia">
+          <Zap className="w-3.5 h-3.5 animate-pulse pulse-glow" />
           Handcrafted Electric Art for Every Vibe
         </div>
 
@@ -50,20 +50,20 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           <span className="block text-white opacity-95">
             LIGHT UP YOUR
           </span>
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-white to-cyan-400 text-glow-fuchsia">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-white to-cyan-400 text-glow-fuchsia subtle-glow">
             UNIVERSE
           </span>
         </h1>
 
         <p className="text-xl md:text-3xl text-slate-400 max-w-3xl mx-auto mb-16 leading-relaxed font-light">
-          Premium neon signs designed to transform your <span className="text-fuchsia-400 font-medium">home</span>, 
-          <span className="text-cyan-400 font-medium"> workspace</span>, or <span className="text-white font-medium">commercial lounge</span>.
+          Premium neon signs designed to transform your <span className="text-fuchsia-400 font-medium text-glow-fuchsia">home</span>, 
+          <span className="text-cyan-400 font-medium text-glow-cyan"> workspace</span>, or <span className="text-white font-medium">commercial lounge</span>.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
           <button 
             onClick={() => onNavigate('shop')}
-            className="group relative px-12 py-6 bg-white text-slate-950 rounded-2xl font-black text-xl flex items-center gap-4 overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 hover:shadow-[0_0_60px_rgba(217,70,239,0.6)]"
+            className="group relative px-12 py-6 bg-white text-slate-950 rounded-2xl font-black text-xl flex items-center gap-4 overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 hover:shadow-[0_0_60px_rgba(217,70,239,0.6)] hover-glow"
           >
             <span className="relative z-10">SHOP NEON</span>
             <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-2 transition-transform" />
@@ -72,7 +72,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           
           <button 
             onClick={() => onNavigate('custom')}
-            className="flex items-center gap-3 px-12 py-6 glass-panel rounded-2xl font-bold text-xl border border-white/10 text-white hover:border-fuchsia-400/50 hover:bg-white/5 transition-all duration-300 hover:text-glow-fuchsia"
+            className="flex items-center gap-3 px-12 py-6 glass-panel rounded-2xl font-bold text-xl border border-white/10 text-white hover:border-fuchsia-400/50 hover:bg-white/5 transition-all duration-300 hover:text-glow-fuchsia neon-glow-cyan"
           >
             CREATE CUSTOM SIGN
           </button>

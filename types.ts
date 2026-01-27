@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-export type PageType = 'home' | 'shop' | 'custom' | 'craft' | 'connect' | 'exhibits' | 'cart' | 'checkout' | 'admin';
+export type PageType = 'home' | 'shop' | 'product' | 'custom' | 'craft' | 'connect' | 'exhibits' | 'cart' | 'checkout' | 'admin';
 
 export interface Message {
   role: 'user' | 'model';
